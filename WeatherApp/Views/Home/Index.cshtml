@@ -1,0 +1,44 @@
+﻿@using ThirdPartyApiCaller.Models;
+@model WeatherApp.Models.WeeklyForecastModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>HomeView</title>
+</head>
+<body>
+    CURRENT LOCATION: @Model.CurrentLocation.City, @Model.CurrentLocation.RegionName @Model.CurrentLocation.Country @Model.CurrentLocation.ZipCode Coordinates(@Model.CurrentLocation.Latitude, @Model.CurrentLocation.Longitude)
+    <br />
+    Forecast for Zipcode @Model.CurrentLocation.ZipCode:
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">High Temp</th>
+                <th scope="col">Low Temp</th>
+                <th scope="col">Chance of Precip</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Day day in Model.WeekForcast.Days)
+            { 
+                <tr>
+                    <td>@day.Date</td>
+                    <td>@day.MaxTemp</td>
+                    <td>@day.MinTemp</td>
+                    <td>@day.PrecipChance</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+   
+</body>
+
+</html>
