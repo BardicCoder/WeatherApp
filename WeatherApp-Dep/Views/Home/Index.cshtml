@@ -5,11 +5,10 @@
     ViewData["Title"] = "Index";
 }
 
-<form method="post" asp-action="Index">
+<form>
     CURRENT LOCATION: @Model.CurrentLocation.City, @Model.CurrentLocation.RegionName @Model.CurrentLocation.Country @Model.CurrentLocation.ZipCode Coordinates(@Model.CurrentLocation.Latitude, @Model.CurrentLocation.Longitude)
     <br />
-    <br />
-    Forecast for Zipcode @Model.DisplayedZip:
+    Forecast for Zipcode @Model.CurrentLocation.ZipCode:
     <table>
         <thead>
             <tr>
@@ -31,8 +30,8 @@
             }
         </tbody>
     </table>
-        
-    <br/>
-    <input asp-for="SearchZip" placeholder="Zip Code" />
+
+    <input asp-for="SearchZip" placeholder="Search" />
     <button type="submit">Search</button>
+
 </form>

@@ -32,33 +32,10 @@ namespace WeatherApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index([FromForm] WeeklyForecastModel model)
+        public void UpdateZip()
         {
-            forecastModel = new WeeklyForecastModel(appSettings);
-
-            Task t = forecastModel.GetWeeklyForecastForZipCode(model.SearchZip);
-            t.Wait();
-
-            return View(forecastModel);
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = "1"});
+            Task updatedForecast = forecastModel.GetWeeklyForecastForZipCode("99123");
+            updatedForecast.Wait();
         }
     }
 }

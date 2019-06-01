@@ -14,8 +14,6 @@ namespace WeatherApp.Models
         public GeolocationModel CurrentLocation { get; private set; }
         public Forecast WeekForcast { get; private set; }
         private readonly IOptions<MySettingsModel> appSettings;
-        public string SearchZip { get; set; }
-        public string DisplayedZip { get; set; }
 
         public WeeklyForecastModel(IOptions<MySettingsModel> settings)
         {
@@ -25,12 +23,6 @@ namespace WeatherApp.Models
 
             Task<bool> forecast = SetCurrentLocationForecast();
             forecast.Wait();
-
-            DisplayedZip = CurrentLocation.ZipCode;
-        }
-
-        public WeeklyForecastModel()
-        {
             
         }
 
@@ -49,10 +41,6 @@ namespace WeatherApp.Models
         public async Task<Forecast> GetWeeklyForecastForZipCode(string zip)
         {
             appSettings.Value.WeatherZip = zip;
-
-            DisplayedZip = zip;
-            SearchZip = null;
-
             WeekForcast = await ApiClientFactory.Instance.CallWeatherApi(appSettings.Value.WeatherUrl);
             return WeekForcast;
         }
