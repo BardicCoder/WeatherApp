@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,50 +12,15 @@ namespace WeatherApp.Models
 {
     public class WeeklyForecastModel
     {
-        public GeolocationModel CurrentLocation { get; private set; }
-        public Forecast WeekForcast { get; private set; }
-        private readonly IOptions<MySettingsModel> appSettings;
+        public GeolocationModel CurrentLocation { get; set; }
+        public Forecast WeekForcast { get; set; }
         public string SearchZip { get; set; }
+        public string SearchZipHistory { get; set; }
         public string DisplayedZip { get; set; }
+        public List<string> SearchHistory { get; set; } = new List<string>();
 
-        public WeeklyForecastModel(IOptions<MySettingsModel> settings)
-        {
-            appSettings = settings;
-            Task<bool> location = SetCurrentLocation();
-            location.Wait();
+        public SelectList SearchHistoryItems { get; set;}
 
-            Task<bool> forecast = SetCurrentLocationForecast();
-            forecast.Wait();
-
-            DisplayedZip = CurrentLocation.ZipCode;
-        }
-
-        public WeeklyForecastModel()
-        {
-            
-        }
-
-        private async Task<bool> SetCurrentLocation()
-        {
-            CurrentLocation = await ApiClientFactory.Instance.CallGeolocationApi(appSettings.Value.GeolocationUrl);
-            return true;
-        }
-
-        private async Task<bool> SetCurrentLocationForecast()
-        {
-            await GetWeeklyForecastForZipCode(CurrentLocation.ZipCode);
-            return true;
-        }
-
-        public async Task<Forecast> GetWeeklyForecastForZipCode(string zip)
-        {
-            appSettings.Value.WeatherZip = zip;
-
-            DisplayedZip = zip;
-            SearchZip = null;
-
-            WeekForcast = await ApiClientFactory.Instance.CallWeatherApi(appSettings.Value.WeatherUrl);
-            return WeekForcast;
-        }
+        
     }
 }

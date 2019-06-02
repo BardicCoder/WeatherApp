@@ -13,26 +13,35 @@
     <table>
         <thead>
             <tr>
-                <th scope="col">Date</th>
-                <th scope="col">High Temp</th>
-                <th scope="col">Low Temp</th>
-                <th scope="col">Chance of Precip</th>
+                <th scope="col" align="center">Date</th>
+                <th scope="col" align="center">High Temp</th>
+                <th scope="col" align="center">Low Temp</th>
+                <th scope="col" align="center">Chance of Precip</th>
             </tr>
         </thead>
         <tbody>
             @foreach (Day day in Model.WeekForcast.Days)
             {
                 <tr>
-                    <td>@day.Date</td>
-                    <td>@day.MaxTemp</td>
-                    <td>@day.MinTemp</td>
-                    <td>@day.PrecipChance</td>
+                    <td align="center">@day.Date</td>
+                    <td align="center">@day.MaxTemp</td>
+                    <td align="center">@day.MinTemp</td>
+                    <td align="center">@day.PrecipChance</td>
                 </tr>
             }
         </tbody>
     </table>
-        
-    <br/>
-    <input asp-for="SearchZip" placeholder="Zip Code" />
-    <button type="submit">Search</button>
+
+    <br />
+    <div class="form-group">
+        <input asp-for="SearchZip" placeholder="Zip Code" />
+        <button type="submit">Search</button>
+    </div>
+    <br />
+
+    <div class="form-group">
+        <label asp-for="SearchHistory">Search History</label>
+        <select asp-for="SearchZipHistory" asp-items="Model.SearchHistoryItems"></select>
+        <button type="submit">Search</button>
+    </div>
 </form>
