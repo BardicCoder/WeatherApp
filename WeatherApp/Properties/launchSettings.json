@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/WeatherApp",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:52281/",
       "sslPort": 0
@@ -18,6 +22,7 @@
     "WeatherApp": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:52281/WeatherApp",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
