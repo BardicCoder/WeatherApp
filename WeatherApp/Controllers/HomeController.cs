@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using ThirdPartyApiCaller.Factory;
 using ThirdPartyApiCaller.Models;
+using WeatherApp.Services;
 
 namespace WeatherApp.Controllers
 {
@@ -17,14 +18,24 @@ namespace WeatherApp.Controllers
     {
         private readonly IOptions<MySettingsModel> appSettings;
         private readonly dbContext _context;
+        private readonly ILocationService _locationService;
+        private readonly IUserService _userService;
+        private readonly IWeatherForecastService _forecastService;
 
-        public HomeController(IOptions<MySettingsModel> app, dbContext context)
+        #region Constructors
+        public HomeController(IOptions<MySettingsModel> app, dbContext context, ILocationService location, 
+            IUserService user, IWeatherForecastService forecast)
         {
             appSettings = app;
             ApplicationSettings.WebApiUrl = appSettings.Value.GeolocationUrl;
+            _locationService = location;
             _context = context;
+            _userService = user;
+            _forecastService = forecast;
         }
+        #endregion Constructors
 
+        #region Index
         public IActionResult Index()
         {
             int memberId = 1;
@@ -60,39 +71,9 @@ namespace WeatherApp.Controllers
             return View(forecastModel);
         }
 
-        private void AddSearchToHistory(string requestZip, int memberId)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var transaction = _context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        var check = _context.UserHistory.Where(zip => zip.ZipCode.Equals(requestZip) && zip.MemberId == memberId);
-                        //ensure data integrity.
-                        if (check.Count<SearchHistory>() == 0)
-                        {
-                            SearchHistory item = new SearchHistory() { MemberId = memberId, ZipCode = requestZip };
-                            _context.Add(item);
+        #endregion Index
 
-                            Task task = _context.SaveChangesAsync();
-                            task.Wait();
-
-                            transaction.Commit();
-                        }
-
-                    }
-
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-
-
-                }
-            }
-        }
+        #region About
 
         public IActionResult About()
         {
@@ -100,33 +81,32 @@ namespace WeatherApp.Controllers
 
             return View();
         }
+        #endregion About
 
+        #region Contact
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
 
             return View();
         }
+        #endregion Contact
 
+        #region Error
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = "1"});
         }
+        #endregion Error
 
-        private async Task<List<SearchHistory>> GetUserSearchHistory(int memberId)
-        {
-            var results = await _context.UserHistory.Where(member => member.MemberId == memberId).ToListAsync();
-            return results;
-        }
-
+        #region View Model Manipulations
         private void SetUserHistory(int memberId, WeeklyForecastModel model)
         {
-            Task<List<SearchHistory>> t = GetUserSearchHistory(memberId);
-            t.Wait();
+            List<SearchHistory> histories = _userService.GetUserSearchHistory(_context, memberId);
 
             model.SearchHistory.Add("Select"); //default setting.
 
-            foreach(SearchHistory item in t.Result)
+            foreach(SearchHistory item in histories)
             {
                 model.SearchHistory.Add(item.ZipCode);
             }
@@ -134,34 +114,32 @@ namespace WeatherApp.Controllers
             model.SearchHistoryItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(model.SearchHistory);
         }
 
+        private void AddSearchToHistory(string requestZip, int memberId)
+        {
+            if (ModelState.IsValid)
+            {
+                _userService.SaveZipCodeToSearchHistory(_context, memberId, requestZip);
+            }
+        }
+
         private void SetCurrentLocation(WeeklyForecastModel model)
         {
-            Task<GeolocationModel> location = ApiClientFactory.Instance.CallGeolocationApi(appSettings.Value.GeolocationUrl);
-            location.Wait();
-
-            model.CurrentLocation = location.Result;
+            model.CurrentLocation = _locationService.GetGeolocation(appSettings);
         }
 
         private void SetCurrentLocationForecast(WeeklyForecastModel model)
         {
-            Forecast forecast = GetWeeklyForecastForZipCode(model);
-            
-            model.WeekForcast = forecast;            
+            model.WeekForcast = GetWeeklyForecastForZipCode(model);
         }
 
         private Forecast GetWeeklyForecastForZipCode(WeeklyForecastModel model)
         {
             string zip = model.SearchZip;
 
-            appSettings.Value.WeatherZip = zip;
-
             model.DisplayedZip = zip;
             model.SearchZip = null;
 
-            Task<Forecast> forecast = ApiClientFactory.Instance.CallWeatherApi(appSettings.Value.WeatherUrl);
-            forecast.Wait();
-
-            return forecast.Result;
+            return _forecastService.GetWeeklyForecastForZipCode(appSettings, zip);
         }
 
         private void InitializeWeeklyForcast(WeeklyForecastModel forecastModel, int memberId)
@@ -172,7 +150,7 @@ namespace WeatherApp.Controllers
             SetCurrentLocationForecast(forecastModel);
             AddSearchToHistory(forecastModel.DisplayedZip, memberId);
             SetUserHistory(memberId, forecastModel);
-
-        }
+        }       
+        #endregion View Model Manipulations
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WeatherApp.Services;
 
 namespace WeatherApp
 {
@@ -24,6 +25,9 @@ namespace WeatherApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSingleton<ILocationService, LocationServiceViaWeb>();
+            services.AddSingleton<IUserService, UserServiceViaDatabase>();
+            services.AddSingleton<IWeatherForecastService, WeatherForecastServiceViaWeb>();
 
             string connStr = Configuration.GetConnectionString("WeatherAppDataBase");
             services.AddDbContext<dbContext>(options => options.UseSqlServer(connStr));
