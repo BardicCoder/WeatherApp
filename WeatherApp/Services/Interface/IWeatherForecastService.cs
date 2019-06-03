@@ -10,6 +10,6 @@ namespace WeatherApp.Services
 {
     public interface IWeatherForecastService
     {
-        Forecast GetWeeklyForecastForZipCode(IOptions<MySettingsModel> settings, string zipCode);
+        Forecast GetWeeklyForecastForZipCode(MySettingsModel settings, string zipCode);
     }
 }

@@ -11,10 +11,10 @@ namespace WeatherApp.Services
 {
     public class WeatherForecastServiceViaWeb : IWeatherForecastService
     {
-        public Forecast GetWeeklyForecastForZipCode(IOptions<MySettingsModel> settings, string zipCode)
+        public Forecast GetWeeklyForecastForZipCode(MySettingsModel settings, string zipCode)
         {
-            settings.Value.WeatherZip = zipCode;
-            Task<Forecast> forecast = ApiClientFactory.Instance.CallWeatherApi(settings.Value.WeatherUrl);
+            settings.WeatherZip = zipCode;
+            Task<Forecast> forecast = ApiClientFactory.Instance.CallWeatherApi(settings.WeatherUrl);
             forecast.Wait();
 
             return forecast.Result;

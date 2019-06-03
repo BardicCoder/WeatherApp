@@ -9,28 +9,34 @@ namespace WeatherApp.Services
 {
     public class UserServiceViaDatabase : IUserService
     {
-        public List<SearchHistory> GetUserSearchHistory(dbContext context, int memberId)
+        private dbContext _context;
+        public UserServiceViaDatabase(dbContext context)
         {
-            Task<List<SearchHistory>> history = context.UserHistory.Where(member => member.MemberId == memberId).ToListAsync();
+            _context = context;
+        }
+
+        public List<SearchHistory> GetUserSearchHistory(int memberId)
+        {
+            Task<List<SearchHistory>> history = _context.UserHistory.Where(member => member.MemberId == memberId).ToListAsync();
             history.Wait();
 
             return history.Result;
         }
 
-        public void SaveZipCodeToSearchHistory(dbContext context, int memberId, string zipCode)
+        public void SaveZipCodeToSearchHistory(int memberId, string zipCode)
         {
-            using (var transaction = context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    var check = context.UserHistory.Where(zip => zip.ZipCode.Equals(zipCode) && zip.MemberId == memberId);
+                    var check = _context.UserHistory.Where(zip => zip.ZipCode.Equals(zipCode) && zip.MemberId == memberId);
                     //ensure data integrity.
                     if (check.Count<SearchHistory>() == 0)
                     {
                         SearchHistory item = new SearchHistory() { MemberId = memberId, ZipCode = zipCode };
-                        context.Add(item);
+                        _context.Add(item);
 
-                        Task task = context.SaveChangesAsync();
+                        Task task = _context.SaveChangesAsync();
                         task.Wait();
 
                         transaction.Commit();

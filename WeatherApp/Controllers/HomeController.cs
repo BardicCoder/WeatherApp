@@ -16,23 +16,21 @@ namespace WeatherApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IOptions<MySettingsModel> appSettings;
-        private readonly dbContext _context;
+        private readonly MySettingsModel appSettings;
         private readonly ILocationService _locationService;
         private readonly IUserService _userService;
         private readonly IWeatherForecastService _forecastService;
 
         #region Constructors
-        public HomeController(IOptions<MySettingsModel> app, dbContext context, ILocationService location, 
+        public HomeController(MySettingsModel app, ILocationService location, 
             IUserService user, IWeatherForecastService forecast)
         {
             appSettings = app;
-            ApplicationSettings.WebApiUrl = appSettings.Value.GeolocationUrl;
+            ApplicationSettings.WebApiUrl = appSettings.GeolocationUrl;
             _locationService = location;
-            _context = context;
             _userService = user;
             _forecastService = forecast;
-        }
+        } 
         #endregion Constructors
 
         #region Index
@@ -102,7 +100,7 @@ namespace WeatherApp.Controllers
         #region View Model Manipulations
         private void SetUserHistory(int memberId, WeeklyForecastModel model)
         {
-            List<SearchHistory> histories = _userService.GetUserSearchHistory(_context, memberId);
+            List<SearchHistory> histories = _userService.GetUserSearchHistory(memberId);
 
             model.SearchHistory.Add("Select"); //default setting.
 
@@ -118,7 +116,7 @@ namespace WeatherApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _userService.SaveZipCodeToSearchHistory(_context, memberId, requestZip);
+                _userService.SaveZipCodeToSearchHistory(memberId, requestZip);
             }
         }
 

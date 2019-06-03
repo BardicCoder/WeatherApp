@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WeatherApp.Services;
+using ThirdPartyApiCaller.Utility;
+using Microsoft.Extensions.Options;
 
 namespace WeatherApp
 {
@@ -25,12 +27,16 @@ namespace WeatherApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton<ILocationService, LocationServiceViaWeb>();
-            services.AddSingleton<IUserService, UserServiceViaDatabase>();
-            services.AddSingleton<IWeatherForecastService, WeatherForecastServiceViaWeb>();
+
+            services.Configure<MySettingsModel>(Configuration.GetSection("MySettings"));
+
+            services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<MySettingsModel>>().Value);
 
             string connStr = Configuration.GetConnectionString("WeatherAppDataBase");
             services.AddDbContext<dbContext>(options => options.UseSqlServer(connStr));
+            services.AddScoped<IUserService, UserServiceViaDatabase>();
+            services.AddScoped<ILocationService, LocationServiceViaWeb>();
+            services.AddScoped<IWeatherForecastService, WeatherForecastServiceViaWeb>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

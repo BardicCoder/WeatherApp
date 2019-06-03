@@ -10,6 +10,6 @@ namespace WeatherApp.Services
 {
     public interface ILocationService
     {
-         GeolocationModel GetGeolocation(IOptions<MySettingsModel> settings);
+         GeolocationModel GetGeolocation(MySettingsModel settings);
     }
 }

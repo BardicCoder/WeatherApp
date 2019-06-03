@@ -11,9 +11,9 @@ namespace WeatherApp.Services
 {
     public class LocationServiceViaWeb : ILocationService
     {
-        public GeolocationModel GetGeolocation(IOptions<MySettingsModel> settings)
+        public GeolocationModel GetGeolocation(MySettingsModel settings)
         {
-            Task<GeolocationModel> location = ApiClientFactory.Instance.CallGeolocationApi(settings.Value.GeolocationUrl);
+            Task<GeolocationModel> location = ApiClientFactory.Instance.CallGeolocationApi(settings.GeolocationUrl);
             location.Wait();
 
             return location.Result;

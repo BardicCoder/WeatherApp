@@ -8,7 +8,7 @@ namespace WeatherApp.Services
 {
     public interface IUserService
     {
-        List<SearchHistory> GetUserSearchHistory(dbContext context, int memberId);
-        void SaveZipCodeToSearchHistory(dbContext context, int memberId, string zipCode);
+        List<SearchHistory> GetUserSearchHistory(int memberId);
+        void SaveZipCodeToSearchHistory(int memberId, string zipCode);
     }
 }
