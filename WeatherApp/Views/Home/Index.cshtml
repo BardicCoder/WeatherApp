@@ -6,6 +6,31 @@
 }
 
 <form method="post" asp-action="Index">
+    <section class="home-banner-area relative">
+        <div class="container">
+            <div class="row fullscreen d-flex align-items-center justify-content-center">
+                <div class="banner-content col-lg-8 col-md-12">
+                    <h1>We Have the Best Weather<br> on the Web</h1>
+                    <p class="text-white">
+                        Just type your Zip Code in the box below or scoll down to see the latest weather report.
+                    </p>
+                    <div class="input-wrap">
+                        <input asp-for="SearchZip" placeholder="Zip Code" class="form-control" />
+                        <button type="submit" class="btn search-btn">Search</button>
+                    </div>
+                    <h4 class="text-white">Recent Searches</h4>
+                    <div class="form-group input-wrap">
+                        <select asp-for="SearchZipHistory" asp-items="Model.SearchHistoryItems"  style="width:100%"></select>
+                        <button type="submit" class="btn search-btn">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rocket-img">
+            <img src="img/rocket.png" alt="">
+        </div>
+    </section>
+
     CURRENT LOCATION: @Model.CurrentLocation.City, @Model.CurrentLocation.RegionName @Model.CurrentLocation.Country @Model.CurrentLocation.ZipCode Coordinates(@Model.CurrentLocation.Latitude, @Model.CurrentLocation.Longitude)
     <br />
     <br />
@@ -33,15 +58,4 @@
     </table>
 
     <br />
-    <div class="form-group">
-        <input asp-for="SearchZip" placeholder="Zip Code" />
-        <button type="submit">Search</button>
-    </div>
-    <br />
-
-    <div class="form-group">
-        <label asp-for="SearchHistory">Search History</label>
-        <select asp-for="SearchZipHistory" asp-items="Model.SearchHistoryItems"></select>
-        <button type="submit">Search</button>
-    </div>
 </form>
